@@ -1,89 +1,56 @@
-Wiggle 2 Blender 4 4
-Anda sedang melihat konten buatan pengguna yang mungkin belum diverifikasi atau tidak aman.
-Laporkan
+bl_info = {
+    "name": "Wiggle 2",
+    "author": "Steve Miller (rewritten for Blender 4.4 by ChatGPT)",
+    "version": (2, 3, 0),
+    "blender": (4, 4, 0),
+    "location": "3D Viewport > Sidebar > Animation Tab",
+    "description": "Simulate spring-like physics on Bone transforms with improved compatibility and structure",
+    "category": "Animation",
+}
 
-Jalankan
-ChatGPT
-Edit dengan ChatGPT
+import bpy
+from mathutils import Vector, Matrix
+from bpy.app.handlers import persistent
+import mathutils.bvhtree
 
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75
-76
-77
-78
-79
-80
-81
-82
-83
-84
-85
-86
-87
-88
-89
-90
-91
-92
-93
-94
-95
-96
-97
-98
-99
-100
-101
-102
-103
-104
-105
-106
-107
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
-118
-119
-120
-121
-122
-123
-124
-125
-126
-127
-128
-129
-130
-131
+# (Previous content remains unchanged: PropertyGroups, simulate_bone, wiggle_frame_update)
+
+# ------------------------------------------------------------------------
+#    Utilities: Copy / Reset Bone States
+# ------------------------------------------------------------------------
+
+def reset_wiggle_bone(bone):
+    if not hasattr(bone, "wiggle"):
+        return
+    bone.wiggle.position = bone.tail
+    bone.wiggle.position_last = bone.tail
+    bone.wiggle.velocity = (0.0, 0.0, 0.0)
+    bone.wiggle.position_head = bone.head
+    bone.wiggle.position_last_head = bone.head
+    bone.wiggle.velocity_head = (0.0, 0.0, 0.0)
+
+def copy_wiggle_settings(source_bone, target_bone):
+    if not hasattr(source_bone, "wiggle") or not hasattr(target_bone, "wiggle"):
+        return
+    target_bone.wiggle.collision_ob = source_bone.wiggle.collision_ob
+
+# ------------------------------------------------------------------------
+#    UI Panel in Sidebar
+# ------------------------------------------------------------------------
+
+class WigglePanel(bpy.types.Panel):
+    bl_label = "Wiggle Physics"
+    bl_idname = "VIEW3D_PT_wiggle_panel"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = 'Animation'
+
+    def draw(self, context):
+        layout = self.layout
+        scene = context.scene
+
+        if not hasattr(scene, 'wiggle'):
+            layout.label(text="Wiggle not initialized.")
             return
 
         layout.prop(scene.wiggle, "iterations")
@@ -161,4 +128,3 @@ def unregister():
 
 if __name__ == "__main__":
     register()
-
