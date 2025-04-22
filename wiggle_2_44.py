@@ -712,7 +712,7 @@ class WiggleBake(bpy.types.Operator):
                 visual_keying=True,
                 use_current_action=context.scene.wiggle.bake_overwrite,
                 bake_types={'POSE'},
-                only_selected_channels=True  # Updated for Blender 4.4
+                channel_types={'LOCATION', 'ROTATION', 'SCALE'}
             )
         else:
             bpy.ops.nla.bake(
