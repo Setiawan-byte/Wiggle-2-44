@@ -1,6 +1,6 @@
 bl_info = {
-    "name": "Wiggle 2",
-    "author": "Steve Miller",
+    "name": "Wiggle 2 44",
+    "author": "Muhammad Setiawan","OG: Steve Miller",
     "version": (2, 2, 5),  # Updated version for Blender 4.4 compatibility
     "blender": (4, 4, 0),  # Explicit Blender 4.4 compatibility
     "location": "3D Viewport > Animation Tab",
