@@ -773,6 +773,10 @@ class WIGGLE_PT_Settings(WigglePanel, bpy.types.Panel):
         if context.active_pose_bone.wiggle_mute:
             row.label(text='Bone muted.')
             return
+#       wiggle unfreeze 
+        if context.object.wiggle_freeze:
+            row.operator('wiggle.unfreeze', icon='UNLOCKED', text="Unfreeze")
+            row.label(text='Wiggle Frozen after Bake.')
 
 class WIGGLE_PT_Head(WigglePanel,bpy.types.Panel):
     bl_label = ''
@@ -976,6 +980,20 @@ class WiggleScene(bpy.types.PropertyGroup):
     bake_nla: bpy.props.BoolProperty(name='Current Action to NLA', description='Move existing animation on the armature into an NLA strip', default = False) 
     is_rendering: bpy.props.BoolProperty(default=False)
     reset: bpy.props.BoolProperty(default=False)
+    
+    #Add wiggle unfreeze 
+class WiggleUnfreeze(bpy.types.Operator):
+    """Unfreeze baked wiggle bones to resume physics simulation"""
+    bl_idname = "wiggle.unfreeze"
+    bl_label = "Unfreeze Wiggle"
+    
+    @classmethod
+    def poll(cls, context):
+        return context.object and context.object.wiggle_freeze
+    
+    def execute(self, context):
+        context.object.wiggle_freeze = False
+        return {'FINISHED'}
 
 def register():
     
@@ -1325,6 +1343,7 @@ def register():
     bpy.utils.register_class(WIGGLE_PT_Tail)
     bpy.utils.register_class(WIGGLE_PT_Utilities)
     bpy.utils.register_class(WIGGLE_PT_Bake)
+    bpy.utils.register_class(WiggleUnfreeze)
     
 #    bpy.app.handlers.frame_change_pre.clear()
 #    bpy.app.handlers.frame_change_post.clear()
