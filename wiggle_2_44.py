@@ -741,6 +741,21 @@ class WigglePanel:
     def poll(cls,context):
         return context.object  
 
+#Add wiggle unfreeze 
+class WiggleUnfreeze(bpy.types.Operator):
+    """Unfreeze baked wiggle bones to resume physics simulation"""
+    bl_idname = "wiggle.unfreeze"
+    bl_label = "Unfreeze Wiggle"
+    
+    @classmethod
+    def poll(cls, context):
+        return context.object and context.object.wiggle_freeze
+    
+    def execute(self, context):
+        context.object.wiggle_freeze = False
+        return {'FINISHED'}
+
+
 class WIGGLE_PT_Settings(WigglePanel, bpy.types.Panel):
     bl_label = 'Wiggle 2'
         
@@ -773,10 +788,6 @@ class WIGGLE_PT_Settings(WigglePanel, bpy.types.Panel):
         if context.active_pose_bone.wiggle_mute:
             row.label(text='Bone muted.')
             return
-#       wiggle unfreeze 
-        if context.object.wiggle_freeze:
-            row.operator('wiggle.unfreeze', icon='UNLOCKED', text="Unfreeze")
-            row.label(text='Wiggle Frozen after Bake.')
 
 class WIGGLE_PT_Head(WigglePanel,bpy.types.Panel):
     bl_label = ''
@@ -915,6 +926,10 @@ class WIGGLE_PT_Utilities(WigglePanel,bpy.types.Panel):
             col.operator('wiggle.copy')
             col.operator('wiggle.select')
         col.operator('wiggle.reset')
+        # Add the Unfreeze Button
+        if context.object and context.object.wiggle_freeze:
+            col.operator('wiggle.unfreeze', icon='UNLOCKED')
+            
         layout.prop(context.scene.wiggle, 'loop')
         layout.prop(context.scene.wiggle, 'iterations')
         
@@ -981,20 +996,6 @@ class WiggleScene(bpy.types.PropertyGroup):
     is_rendering: bpy.props.BoolProperty(default=False)
     reset: bpy.props.BoolProperty(default=False)
     
-    #Add wiggle unfreeze 
-class WiggleUnfreeze(bpy.types.Operator):
-    """Unfreeze baked wiggle bones to resume physics simulation"""
-    bl_idname = "wiggle.unfreeze"
-    bl_label = "Unfreeze Wiggle"
-    
-    @classmethod
-    def poll(cls, context):
-        return context.object and context.object.wiggle_freeze
-    
-    def execute(self, context):
-        context.object.wiggle_freeze = False
-        return {'FINISHED'}
-
 def register():
     
     #WIGGLE TOGGLES
@@ -1374,6 +1375,8 @@ def unregister():
     bpy.utils.unregister_class(WIGGLE_PT_Tail)
     bpy.utils.unregister_class(WIGGLE_PT_Utilities)
     bpy.utils.unregister_class(WIGGLE_PT_Bake)
+    bpy.utils.unregister_class(WiggleUnfreeze)
+
     
     bpy.app.handlers.frame_change_pre.remove(wiggle_pre)
     bpy.app.handlers.frame_change_post.remove(wiggle_post)
